@@ -84,11 +84,7 @@ int main()
 		// Leveling Up
 		if (state==State::LEVELING_UP)
 		{
-			if (event.key.code == Keyboard::Num1)
-			{
-				state = State::PLAYING;
-			}
-			event.key.code == Keyboard::Num1 ? state = State::PLAYING : 
+			event.key.code == Keyboard::Num1 ? state = State::PLAYING :
 			event.key.code == Keyboard::Num2 ? state = State::PLAYING :
 			event.key.code == Keyboard::Num3 ? state = State::PLAYING :
 			event.key.code == Keyboard::Num4 ? state = State::PLAYING :
