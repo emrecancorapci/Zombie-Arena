@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "Player.h"
 #include "ZombieArena.h"
+#include "TextureHolder.h"
 
 using namespace sf;
 
@@ -64,6 +65,8 @@ int main()
 
 #pragma region START
 
+	TextureHolder textureHolder;
+
 	enum class State{ PAUSED, LEVELING_UP, GAME_OVER, PLAYING};
 
 	State state(State::GAME_OVER);
@@ -91,6 +94,10 @@ int main()
 	VertexArray background;
 	Texture backgroundTexture;
 	backgroundTexture.loadFromFile("graphics/background_sheet.png");
+
+	int numZombies;
+	int numZombiesAlive;
+	Zombie* zombies = nullptr;
 
 #pragma endregion
 

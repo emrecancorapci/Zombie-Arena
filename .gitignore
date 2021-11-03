@@ -30,3 +30,8 @@ Zombie-Arena.vcxproj.user
 .vs/Zombie-Arena/v16/ipch/AutoPCH/e75b139bd9f53837/MAIN.ipch
 .vs/Zombie-Arena/v16/ipch/AutoPCH/ec7ee6f679466654/ZOMBIEARENA.ipch
 Debug/ZombieArena.obj
+.vs/Zombie-Arena/v16/ipch/AutoPCH/af6829c82642db26/CREATEHORDE.ipch
+.vs/Zombie-Arena/v16/ipch/AutoPCH/6a6c7ff1b2c16434/ZOMBIE.ipch
+.vs/Zombie-Arena/v16/ipch/AutoPCH/494da3c492234f79/TEXTUREHOLDER.ipch
+Debug/TextureHolder.obj
+Debug/Zombie.obj
