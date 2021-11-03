@@ -34,5 +34,6 @@
 # Other
 
 *.db
+*.vcxproj
 .vs/
 Debug/
