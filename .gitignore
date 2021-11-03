@@ -1,37 +1,38 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Other
 
 *.db
-.vs/Zombie-Arena/v16/.suo
-.vs/Zombie-Arena/v16/Browse.VC.db-shm
-.vs/Zombie-Arena/v16/Browse.VC.db-wal
-.vs/Zombie-Arena/v16/Browse.VC.opendb
-.vs/Zombie-Arena/v16/ipch/AutoPCH/ecb0214944d141bf/PLAYER.ipch
-.vs/Zombie-Arena/v16/ipch/AutoPCH/f37f606457d527c6/ZOMBIE-ARENA.ipch
-Debug/Player.obj
-Debug/vc142.idb
-Debug/vc142.pdb
-Debug/Zombie-Arena.exe
-Debug/Zombie-Arena.exe.recipe
-Debug/Zombie-Arena.ilk
-Debug/Zombie-Arena.log
-Debug/Zombie-Arena.obj
-Debug/Zombie-Arena.pdb
-Debug/Zombie-Arena.tlog/CL.command.1.tlog
-Debug/Zombie-Arena.tlog/CL.read.1.tlog
-Debug/Zombie-Arena.tlog/CL.write.1.tlog
-Debug/Zombie-Arena.tlog/link.command.1.tlog
-Debug/Zombie-Arena.tlog/link.read.1.tlog
-Debug/Zombie-Arena.tlog/link.write.1.tlog
-Debug/Zombie-Arena.tlog/Zombie-Arena.lastbuildstate
-Debug/Zombie-Arena.vcxproj.FileListAbsolute.txt
-Zombie-Arena.vcxproj
-Zombie-Arena.vcxproj.filters
-Zombie-Arena.vcxproj.user
-.vs/Zombie-Arena/v16/ipch/AutoPCH/486e5e8f8c3b615d/ZOMBIEARENA.ipch
-.vs/Zombie-Arena/v16/ipch/AutoPCH/e75b139bd9f53837/MAIN.ipch
-.vs/Zombie-Arena/v16/ipch/AutoPCH/ec7ee6f679466654/ZOMBIEARENA.ipch
-Debug/ZombieArena.obj
-.vs/Zombie-Arena/v16/ipch/AutoPCH/af6829c82642db26/CREATEHORDE.ipch
-.vs/Zombie-Arena/v16/ipch/AutoPCH/6a6c7ff1b2c16434/ZOMBIE.ipch
-.vs/Zombie-Arena/v16/ipch/AutoPCH/494da3c492234f79/TEXTUREHOLDER.ipch
-Debug/TextureHolder.obj
-Debug/Zombie.obj
+.vs/
+Debug/
