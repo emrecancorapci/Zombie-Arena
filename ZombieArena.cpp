@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "ZombieArena.h"
 #include "TextureHolder.h"
+#include "Bullet.h"
 
 using namespace sf;
 
@@ -71,6 +72,7 @@ int main()
 
 	State state(State::GAME_OVER);
 
+	// Window
 	Vector2f resolution;
 	resolution.x = VideoMode::getDesktopMode().width;
 	resolution.y = VideoMode::getDesktopMode().height;
@@ -81,23 +83,35 @@ int main()
 
 	View mainView(FloatRect(0,0, resolution.x, resolution.y));
 
+	// Time
 	Clock clock;
 	Time gameTimeTotal;
 
+	// Mouse
 	Vector2f mouseWorldPosition;
 	Vector2i mouseScreenPosition;
 
 	Player player;
 
+	// Background
 	IntRect arena;
 
 	VertexArray background;
-	Texture backgroundTexture;
-	backgroundTexture.loadFromFile("graphics/background_sheet.png");
+	Texture backgroundTexture = TextureHolder::GetTexture("graphics/background_sheet.png");
 
 	int numZombies;
 	int numZombiesAlive;
+
 	Zombie* zombies = nullptr;
+
+	Bullet bullets[100];
+	int currentBullet = 0;
+	int bulletsSpare = 24;
+	int bulletsInClip = 6;
+	int clipSize = 6;
+	float fireRate = 1;
+
+	Time lastPressed;
 
 #pragma endregion
 
@@ -137,14 +151,19 @@ int main()
 		// WASD
 		if (state == State::PLAYING)
 		{
-			Keyboard::isKeyPressed(Keyboard::W)?
-				player.moveUp() : player.stopUp();
-			Keyboard::isKeyPressed(Keyboard::S)?
-				player.moveDown() : player.stopDown();
-			Keyboard::isKeyPressed(Keyboard::A)?
-				player.moveLeft() : player.stopLeft();
-			Keyboard::isKeyPressed(Keyboard::D)?
-				player.moveRight() : player.stopRight();
+			Keyboard::isKeyPressed(Keyboard::W)? player.moveUp() : player.stopUp();
+			Keyboard::isKeyPressed(Keyboard::S)? player.moveDown() : player.stopDown();
+			Keyboard::isKeyPressed(Keyboard::A)? player.moveLeft() : player.stopLeft();
+			Keyboard::isKeyPressed(Keyboard::D)? player.moveRight() : player.stopRight();
+		}
+
+		if (Mouse::isButtonPressed(Mouse::Left))
+		{
+			if (gameTimeTotal.asMilliseconds() - lastPressed.asMilliseconds() > 1000 / fireRate
+				&& bulletsInClip > 0)
+			{
+				
+			}
 		}
 
 		// Leveling Up
@@ -159,14 +178,21 @@ int main()
 
 			if (state == State::PLAYING)
 			{
-				arena.width = 500;
-				arena.height = 500;
+				arena.width = 1000;
+				arena.height = 1000;
 				arena.left = 0;
 				arena.top = 0;
 
 				int tileSize = createBackground(background, arena);
 
 				player.spawn(arena,resolution, tileSize);
+
+				numZombies = 10;
+
+				delete[] zombies;
+				zombies = createHorde(numZombies,arena);
+				numZombiesAlive = numZombies;
+
 
 				clock.restart();
 			}
@@ -179,6 +205,19 @@ int main()
 
 		if(state == State::PLAYING)
 		{
+			if (event.key.code == Keyboard::R)
+			{
+				if (bulletsSpare >= clipSize)
+				{
+					bulletsInClip = clipSize;
+					bulletsSpare -= clipSize;
+				}
+				else if (bulletsSpare > 0)
+				{
+					bulletsInClip = bulletsSpare;
+					bulletsSpare = 0;
+				}
+			}
 			Time deltaTime(clock.restart());
 			gameTimeTotal += deltaTime;
 			float dtAsSeconds(deltaTime.asSeconds());
@@ -190,6 +229,11 @@ int main()
 
 			Vector2f playerPosition(player.getCenter());
 			mainView.setCenter(playerPosition);
+
+			for (int i = 0; i < numZombies; i++)
+			{
+				zombies[i].update(deltaTime.asSeconds(), playerPosition);
+			}
 		}
 
 	#pragma endregion
@@ -206,6 +250,11 @@ int main()
 
 			window.setView(mainView);
 			window.draw(player.getSprirte());
+
+			for (int i = 0; i < numZombies; i++)
+			{
+				window.draw(zombies[i].getSprite());
+			}
 		}
 
 		if (state == State::LEVELING_UP)
@@ -230,6 +279,8 @@ int main()
 	#pragma endregion
 
 	}
+
+	delete[] zombies;
 
 	return 0;
 }

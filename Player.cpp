@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "TextureHolder.h"
 
 Player::Player()
 {
@@ -6,8 +7,7 @@ Player::Player()
 	_health = START_HEALTH;
 	_maxHealth = START_HEALTH;
 
-	_texture.loadFromFile("graphics/player.png");
-	_sprite.setTexture(_texture);
+	_sprite = Sprite(TextureHolder::GetTexture("graphics/player.png"));
 
 	_sprite.setOrigin(25, 25);
 }
