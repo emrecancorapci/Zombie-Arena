@@ -28,6 +28,11 @@ void Bullet::shoot(float startX, float startY, float targetX, float targetY)
 		_bulletDistX *= -1;
 	}
 
+	if (targetY < startY)
+	{
+		_bulletDistY *= -1;
+	}
+
 	float range = 1000;
 	_minX = startX - range;
 	_maxX = startX + range;
@@ -50,7 +55,7 @@ bool Bullet::isFlying()
 
 FloatRect Bullet::getPosition()
 {
-	_bulletShape.getGlobalBounds();
+	return _bulletShape.getGlobalBounds();
 }
 
 RectangleShape Bullet::getShape()
@@ -65,7 +70,8 @@ void Bullet::update(float deltaTime)
 
 	_bulletShape.setPosition(_position);
 
-	if (_position.x < _minX || _position.x > _maxX || _position.y < _minY || _position.y > _maxY)
+	if (_position.x < _minX || _position.x > _maxX ||
+		_position.y < _minY || _position.y > _maxY)
 	{
 		_isFlying = false;
 	}

@@ -7,60 +7,6 @@
 
 using namespace sf;
 
-int createBackground(VertexArray& vertexArray, IntRect arena)
-{
-	// Size of each tile/texture
-	const int TILE_SIZE = 50;
-	const int TILE_TYPES = 3;
-	const int VERTS_IN_QUAD = 4;
-
-	int worldWidth = arena.width / TILE_SIZE;
-	int worldHeight = arena.height / TILE_SIZE;
-
-	vertexArray.setPrimitiveType(Quads);
-
-	// Size of the vertex array
-	vertexArray.resize(worldWidth * worldHeight * VERTS_IN_QUAD);
-
-	int currentVertex = 0;
-
-	for (int i = 0; i < worldWidth; i++)
-	{
-		for(int j = 0; j < worldHeight; j++)
-		{
-			vertexArray[currentVertex + 0].position = Vector2f(i * TILE_SIZE,j * TILE_SIZE);
-			vertexArray[currentVertex + 1].position = Vector2f((i + 1) * TILE_SIZE, j * TILE_SIZE);
-			vertexArray[currentVertex + 2].position = Vector2f((i + 1) * TILE_SIZE, (j + 1) * TILE_SIZE);
-			vertexArray[currentVertex + 3].position = Vector2f(i * TILE_SIZE, (j + 1) * TILE_SIZE);
-
-			if(i == (0 || worldWidth - 1) || j == (0 || worldHeight - 1))
-			{
-				vertexArray[currentVertex + 0].texCoords = Vector2f(0, TILE_TYPES * TILE_SIZE);
-				vertexArray[currentVertex + 1].texCoords = Vector2f(TILE_SIZE, TILE_TYPES * TILE_SIZE);
-				vertexArray[currentVertex + 2].texCoords = Vector2f(TILE_SIZE, (TILE_TYPES +1) * TILE_SIZE);
-				vertexArray[currentVertex + 3].texCoords = Vector2f(0, (TILE_TYPES +1) * TILE_SIZE);
-			}
-			else
-			{
-				srand((int)time(0) + j * (i-1));
-				int randomTile = rand() % TILE_TYPES;
-				int verticalOffset = randomTile * TILE_SIZE;
-
-				vertexArray[currentVertex + 0].texCoords = Vector2f(0, verticalOffset);
-				vertexArray[currentVertex + 1].texCoords = Vector2f(TILE_SIZE, verticalOffset);
-				vertexArray[currentVertex + 2].texCoords = Vector2f(TILE_SIZE, verticalOffset + TILE_SIZE);
-				vertexArray[currentVertex + 3].texCoords = Vector2f(0, verticalOffset + TILE_SIZE);
-
-			}
-
-			currentVertex = currentVertex + VERTS_IN_QUAD;
-		}
-	}
-
-	return TILE_SIZE;
-}
-
-
 int main()
 {
 
@@ -85,7 +31,9 @@ int main()
 
 	// Time
 	Clock clock;
+
 	Time gameTimeTotal;
+	Time lastPressed;
 
 	// Mouse
 	Vector2f mouseWorldPosition;
@@ -99,19 +47,27 @@ int main()
 	VertexArray background;
 	Texture backgroundTexture = TextureHolder::GetTexture("graphics/background_sheet.png");
 
+	// Zombies
 	int numZombies;
 	int numZombiesAlive;
 
 	Zombie* zombies = nullptr;
 
+	// Bullets
 	Bullet bullets[100];
+
 	int currentBullet = 0;
 	int bulletsSpare = 24;
 	int bulletsInClip = 6;
 	int clipSize = 6;
 	float fireRate = 1;
 
-	Time lastPressed;
+	// Cursor and crosshair
+	window.setMouseCursorVisible(false);
+	Sprite spriteCrosshair;
+	Texture textureCrosshair = TextureHolder::GetTexture("graphics/crosshair.png");
+	spriteCrosshair.setTexture(textureCrosshair);
+	spriteCrosshair.setOrigin(25,25);
 
 #pragma endregion
 
@@ -120,7 +76,8 @@ int main()
 
 	#pragma region PRE-UPDATE
 
-		Event event;
+		// Events
+		Event event{};
 		while(window.pollEvent(event))
 		{
 			if(event.type == Event::KeyPressed)
@@ -138,13 +95,32 @@ int main()
 					else if (state == State::GAME_OVER)
 						state = State::LEVELING_UP;
 				}
+
 				if(state == State::PLAYING)
 				{
-					// ...
+					// Reloading
+					if (event.key.code == Keyboard::R)
+					{
+						if (bulletsSpare >= clipSize)
+						{
+							bulletsInClip = clipSize;
+							bulletsSpare -= clipSize;
+						}
+						else if (bulletsSpare > 0)
+						{
+							bulletsInClip = bulletsSpare;
+							bulletsSpare = 0;
+						}
+						else
+						{
+							// ...
+						}
+					}
 				}
 			}
 		}
 
+		// Closing Window
 		if(Keyboard::isKeyPressed(Keyboard::Escape))
 			window.close();
 
@@ -155,14 +131,29 @@ int main()
 			Keyboard::isKeyPressed(Keyboard::S)? player.moveDown() : player.stopDown();
 			Keyboard::isKeyPressed(Keyboard::A)? player.moveLeft() : player.stopLeft();
 			Keyboard::isKeyPressed(Keyboard::D)? player.moveRight() : player.stopRight();
-		}
 
-		if (Mouse::isButtonPressed(Mouse::Left))
-		{
-			if (gameTimeTotal.asMilliseconds() - lastPressed.asMilliseconds() > 1000 / fireRate
-				&& bulletsInClip > 0)
+			if (Mouse::isButtonPressed(Mouse::Left))
 			{
-				
+				if (gameTimeTotal.asMilliseconds() * 1.0f - lastPressed.asMilliseconds() > 1000 / fireRate
+					&& bulletsInClip > 0)
+				{
+					bullets[currentBullet].shoot(
+						player.getCenter().x, 
+						player.getCenter().y,
+						mouseWorldPosition.x, 
+						mouseWorldPosition.y);
+
+					currentBullet++;
+
+					if (currentBullet > 99)
+					{
+						currentBullet = 0;
+					}
+
+					lastPressed = gameTimeTotal;
+
+					bulletsInClip--;
+				}
 			}
 		}
 
@@ -178,8 +169,8 @@ int main()
 
 			if (state == State::PLAYING)
 			{
-				arena.width = 1000;
-				arena.height = 1000;
+				arena.width = 500;
+				arena.height = 500;
 				arena.left = 0;
 				arena.top = 0;
 
@@ -190,6 +181,7 @@ int main()
 				numZombies = 10;
 
 				delete[] zombies;
+
 				zombies = createHorde(numZombies,arena);
 				numZombiesAlive = numZombies;
 
@@ -205,34 +197,36 @@ int main()
 
 		if(state == State::PLAYING)
 		{
-			if (event.key.code == Keyboard::R)
-			{
-				if (bulletsSpare >= clipSize)
-				{
-					bulletsInClip = clipSize;
-					bulletsSpare -= clipSize;
-				}
-				else if (bulletsSpare > 0)
-				{
-					bulletsInClip = bulletsSpare;
-					bulletsSpare = 0;
-				}
-			}
+			// Time
 			Time deltaTime(clock.restart());
 			gameTimeTotal += deltaTime;
 			float dtAsSeconds(deltaTime.asSeconds());
 
+			// Mouse
 			mouseScreenPosition = Mouse::getPosition();
 			mouseWorldPosition = window.mapPixelToCoords(mouseScreenPosition, mainView);
+			spriteCrosshair.setPosition(mouseWorldPosition);
 
+			// Player
 			player.update(dtAsSeconds, mouseScreenPosition);
 
 			Vector2f playerPosition(player.getCenter());
 			mainView.setCenter(playerPosition);
 
-			for (int i = 0; i < numZombies; i++)
+			// Zombies
+			for (int i = 0; numZombies > i; i++)
 			{
-				zombies[i].update(deltaTime.asSeconds(), playerPosition);
+				if(zombies[i].isAlive())
+					zombies[i].update(deltaTime.asSeconds(), playerPosition);
+			}
+
+			// Bullets
+			for (auto& bullet : bullets)
+			{
+				if (bullet.isFlying())
+				{
+					bullet.update(dtAsSeconds);
+				}
 			}
 		}
 
@@ -243,18 +237,29 @@ int main()
 
 		if(state == State::PLAYING)
 		{
-			std::cout << "playing" << std::endl;;
 			window.clear();
 
+			window.setView(mainView);
 			window.draw(background, &backgroundTexture);
 
-			window.setView(mainView);
-			window.draw(player.getSprirte());
-
+			// Zombies
 			for (int i = 0; i < numZombies; i++)
 			{
 				window.draw(zombies[i].getSprite());
 			}
+
+			// Bullets
+			for (auto& bullet : bullets)
+			{
+				window.draw(bullet.getShape());
+			}
+
+			//Player
+			window.draw(player.getSprirte());
+
+			// Crosshair
+			window.draw(spriteCrosshair);
+
 		}
 
 		if (state == State::LEVELING_UP)

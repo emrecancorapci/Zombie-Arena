@@ -76,14 +76,27 @@ void Zombie::update(float elapsedTime, Vector2f playerLocation)
 	float playerX = playerLocation.x;
 	float playerY = playerLocation.y;
 
-	_position.x += playerX > _position.x ?  _speed * elapsedTime :
-				   playerX < _position.x ? -_speed * elapsedTime : 0;
-	_position.y += playerY > _position.y ?  _speed * elapsedTime :
-				   playerY < _position.y ? -_speed * elapsedTime : 0;
+	if (playerX > _position.x)
+	{
+		_position.x += _speed * elapsedTime;
+	}
+	if (playerY > _position.y)
+	{
+		_position.y += _speed * elapsedTime;
+	}
+	if (playerX < _position.x)
+	{
+		_position.x -= _speed * elapsedTime;
+	}
+	if (playerY < _position.y)
+	{
+		_position.y -= _speed * elapsedTime;
+	}
 
 	_sprite.setPosition(_position);
 
-	float angle = atan2(playerY - _position.y, playerX - _position.x) * 180 / 3.141f;
+	float angle = atan2(playerY - _position.y,
+		playerX - _position.x) * 180 / 3.141f;
 
 	_sprite.setRotation(angle);
 }
